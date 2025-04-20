@@ -34,7 +34,9 @@ function useAuth() {
     },
   });
 
-  const profileRQ = useGetRequest<User>("profile", USER, {});
+  const profileRQ = useGetRequest<User>("profile", USER, {
+    enabled: false,
+  });
 
   const logoutHandler = () => {
     clearUserToken();

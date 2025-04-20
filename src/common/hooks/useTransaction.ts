@@ -15,10 +15,14 @@ function useTransaction() {
   const locallyCreated = useRef<Transaction[]>([]);
 
   const getTransactionsRQ = useGetRequest<Transaction[]>("transactions", LIST, {
-    select: (res) => ({
-      ...res,
-      data: [...(res.data || []), ...locallyCreated.current],
-    }),
+    select: (res) => {
+      console.log(res);
+      return {
+        ...res,
+        data: [...(res.data || []), ...locallyCreated.current],
+      };
+    },
+    enabled: false,
   });
 
   const createTransactionRQ = useRequest<Transaction, Transaction>(LIST, {
