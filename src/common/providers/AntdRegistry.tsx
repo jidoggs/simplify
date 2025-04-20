@@ -120,6 +120,18 @@ const appTheme: ThemeConfig = {
     DatePicker: {
       cellActiveWithRangeBg: gray[500],
       cellRangeBorderColor: primary[200],
+      paddingBlock: 10,
+      paddingInline: 15,
+      borderRadius: 8,
+      fontSize: 16,
+      colorText: gray[100],
+      colorBgContainer: gray[800],
+      fontWeightStrong: 400,
+      colorBorderBg: gray[600],
+      colorTextPlaceholder: gray[100],
+      colorBgContainerDisabled: gray[800],
+      margin: 0,
+      controlHeight: 44,
     },
     Typography: {
       titleMarginTop: 0,

@@ -3,8 +3,7 @@ import { Table } from "antd";
 import { TableProps } from "antd/lib";
 import { Loader } from "../Loader";
 
-interface CustomAntdTableProps<T>
-  extends Omit<TableProps<T>, "pagination" | "title"> {
+interface CustomAntdTableProps<T> extends Omit<TableProps<T>, "title"> {
   tableTitle?: string | null | React.ReactNode;
   pageSize?: number;
   currentPage?: number;
@@ -20,7 +19,6 @@ export const CheckedBoxTable = <T extends object>({
     <div className="bg-white  h-full overflow-auto">
       <Table
         {...props}
-        pagination={false}
         sticky={true}
         scroll={{ x: "max-content" }}
         rowKey={"id"}
@@ -33,4 +31,3 @@ export const CheckedBoxTable = <T extends object>({
     </div>
   );
 };
-

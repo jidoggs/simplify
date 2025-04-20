@@ -1,4 +1,5 @@
 import { ColumnsType } from "antd/es/table";
+import dayjs from "dayjs";
 
 export const columns: ColumnsType<any> = [
   {
@@ -53,5 +54,6 @@ export const columns: ColumnsType<any> = [
     title: "Date",
     dataIndex: "date",
     width: 200,
+    render: (value) => <>{dayjs(value).format("YYYY-MM-DD")}</>,
   },
 ];

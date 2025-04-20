@@ -21,18 +21,6 @@ export const useGetRequest = <T>(
   });
 };
 
-export const useAuthGetRequest = <T>(
-  key: string,
-  path: string,
-  options?: QueryOptions<T>
-) => {
-  return useQuery<APIResponse<T>, APIError, APIResponse<T>, QueryKey>({
-    queryKey: [key],
-    queryFn: () => makeGetRequest(path, { isAuthoried: true }),
-    ...options,
-  });
-};
-
 export const useRequest = <R, P>(
   path: string,
   options?: MutationOptions<R, RequestPayload<P>>
@@ -40,17 +28,6 @@ export const useRequest = <R, P>(
   return useMutation<APIResponse<R>, APIError, RequestPayload<P>>({
     mutationFn: ({ data, method }) =>
       makeRequest(path, { method, data, isAuthoried: false }),
-    ...options,
-  });
-};
-
-export const useAuthRequest = <R, P>(
-  path: string,
-  options?: MutationOptions<R, RequestPayload<P>>
-) => {
-  return useMutation<APIResponse<R>, APIError, RequestPayload<P>>({
-    mutationFn: ({ data, method }) =>
-      makeRequest(path, { method, data, isAuthoried: true }),
     ...options,
   });
 };

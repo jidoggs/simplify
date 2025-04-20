@@ -1,60 +1,55 @@
 import { useEffect, useState } from "react";
-import { Button, message, Typography, Space, Row, Col, Layout } from "antd";
+import { Button, Typography, Space, Row, Col, Layout, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import { columns } from "./helper";
 import { CheckedBoxTable } from "../../../../common/components/CustomTable";
 import { routeLinks } from "../../../../common/routes/route-links";
 import useTransaction from "../../../../common/hooks/useTransaction";
 import FilterModal from "../../../../common/components/FilterModal";
+import { usePagination } from "../../../../common/hooks/usePagination";
+import { useDebounce } from "../../../../common/hooks/useDebounce";
 
 const { Title } = Typography;
 const { Content } = Layout;
+const { Search } = Input;
 
 function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredData, setFilteredData] = useState<any[]>([]);
+
   const [filterParams, setFilterParams] = useState({
     dateRange: [] as string[],
     searchText: "",
     status: "",
   });
 
+  const search = useDebounce(filterParams.searchText, 600);
+
+  const date = {
+    end: filterParams.dateRange[1],
+    start: filterParams.dateRange[0],
+  };
+  const pagination = usePagination({ itemsPerPage: 15 });
+  const query = {
+    status: filterParams.status,
+    search,
+    date: filterParams.dateRange[1] ? JSON.stringify(date) : "",
+    page: pagination.currentPage,
+    limit: pagination.itemsPerPage,
+  };
+
   const navigate = useNavigate();
-  const { getTransactionsRQ } = useTransaction();
+  const { getTransactionsRQ } = useTransaction({
+    canGetTransactions: true,
+    ...query,
+  });
 
   useEffect(() => {
-    if (!getTransactionsRQ.isPending) return;
-    getTransactionsRQ.refetch();
-  }, [getTransactionsRQ.isPending]);
+    if (getTransactionsRQ.data?.count) {
+      pagination.handleTotalItems(getTransactionsRQ.data?.count);
+    }
+  }, [getTransactionsRQ.data?.count]);
 
   const handleApplyFilters = () => {
-    const allData = getTransactionsRQ.data?.data || [];
-
-    const filtered = allData.filter((item) => {
-      const { dateRange, searchText, status } = filterParams;
-
-      const matchesStatus = status
-        ? item.status.toLowerCase() === status.toLowerCase()
-        : true;
-
-      const matchesSearch = searchText
-        ? item.id.toLowerCase().includes(searchText.toLowerCase()) ||
-          item.amount
-            .toString()
-            .toLowerCase()
-            .includes(searchText.toLowerCase())
-        : true;
-
-      const matchesDate =
-        dateRange.length === 2
-          ? new Date(item.date) >= new Date(dateRange[0]) &&
-            new Date(item.date) <= new Date(dateRange[1])
-          : true;
-
-      return matchesStatus && matchesSearch && matchesDate;
-    });
-
-    setFilteredData(filtered);
     setIsModalOpen(false);
   };
 
@@ -64,7 +59,6 @@ function Page() {
       searchText: "",
       status: "",
     });
-    message.success("Filters reset");
   };
 
   const handleAddTransaction = () => {
@@ -78,6 +72,10 @@ function Page() {
     setFilterParams((prev) => ({ ...prev, [key]: value }));
   };
 
+  const searchHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    filterHandler("searchText", e.target.value);
+  };
+
   return (
     <Content style={{ padding: "1rem" }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
@@ -86,6 +84,13 @@ function Page() {
         </Col>
         <Col>
           <Space>
+            <Search
+              placeholder="Search by Transaction ID or Amount"
+              allowClear
+              value={filterParams.searchText}
+              onChange={searchHandler}
+              style={{ width: "100%" }}
+            />
             <Button type="default" onClick={() => setIsModalOpen(true)}>
               Filter
             </Button>
@@ -99,12 +104,16 @@ function Page() {
       <div style={{ height: "calc(100vh - 180px)", overflowY: "auto" }}>
         <CheckedBoxTable
           columns={columns}
-          dataSource={
-            filteredData.length
-              ? filteredData
-              : getTransactionsRQ.data?.data || []
-          }
+          dataSource={getTransactionsRQ.data?.data}
           loading={getTransactionsRQ.isFetching}
+          pagination={{
+            current: pagination.currentPage,
+            pageSize: pagination.itemsPerPage,
+            total: getTransactionsRQ.data?.count || 0,
+            onChange: (page) => {
+              pagination.handlePageChange({ selected: page });
+            },
+          }}
         />
       </div>
 

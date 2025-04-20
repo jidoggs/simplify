@@ -1,5 +1,5 @@
 export type APIResponseSuccessModel<T = unknown> = {
-    results?: number;
+    count?: number;
     data: T;
     message: string;
     success: true;

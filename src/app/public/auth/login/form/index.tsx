@@ -14,6 +14,7 @@ function LoginForm() {
   const errors = form.formState.errors;
 
   const onSubmit = (payload: LoginFormType) => {
+    delete payload.remember;
     loginRQ.mutate({
       data: payload,
     });

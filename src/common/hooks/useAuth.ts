@@ -20,7 +20,6 @@ function useAuth() {
 
   const loginRQ = useRequest<User, LoginFormType>(LOGIN, {
     onSuccess: (res, payload) => {
-      console.log(res.data.access_token);
       if (res?.data?.access_token) {
         storeUserTokens(
           res?.data?.access_token,
