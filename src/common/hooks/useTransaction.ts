@@ -1,12 +1,34 @@
+import { useRef } from "react";
 import { endpoints } from "../service/config/endpoint";
 import { useGetRequest, useRequest } from "../service/RQHelpers";
 
 const { LIST } = endpoints.TRANSACTIONS;
 
-function useTransaction() {
-  const getTransactionsRQ = useGetRequest("transactions", LIST);
+type Transaction = {
+  id: string;
+  amount: number;
+  status: string;
+  date: string;
+};
 
-  const createTransactionRQ = useRequest(LIST, {});
+function useTransaction() {
+  const locallyCreated = useRef<Transaction[]>([]);
+
+  const getTransactionsRQ = useGetRequest<Transaction[]>("transactions", LIST, {
+    select: (res) => ({
+      ...res,
+      data: [...(res.data || []), ...locallyCreated.current],
+    }),
+  });
+
+  const createTransactionRQ = useRequest<Transaction, Transaction>(LIST, {
+    onSuccess: (_, variable) => {
+      if (variable?.data) {
+        locallyCreated.current.unshift(variable.data);
+        getTransactionsRQ.refetch();
+      }
+    },
+  });
 
   return { getTransactionsRQ, createTransactionRQ };
 }

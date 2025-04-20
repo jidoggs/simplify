@@ -4,7 +4,7 @@ import type { MenuProps } from "antd";
 import { Menu } from "antd";
 import { menuItems, rootSubmenuKeys } from "./helper";
 import { useLocation, useNavigate } from "react-router-dom";
-import { routeLinks } from "../../routes/route-links";
+import useAuth from "../../hooks/useAuth";
 
 const { Sider } = Layout;
 
@@ -23,10 +23,7 @@ function SideNav() {
     }
   };
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-    navigate(routeLinks.auth.login);
-  };
+  const { logoutHandler } = useAuth();
 
   return (
     <Sider
@@ -61,7 +58,7 @@ function SideNav() {
         </Flex>
 
         <div className="px-4 pb-4">
-          <Button danger type="primary" block onClick={handleLogout}>
+          <Button danger type="primary" block onClick={logoutHandler}>
             Logout
           </Button>
         </div>

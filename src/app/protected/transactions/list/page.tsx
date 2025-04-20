@@ -33,8 +33,6 @@ function Page() {
     navigate(routeLinks.protected.transactions.create);
   };
 
-  console.log(JSON.stringify(rows));
-
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
